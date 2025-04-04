@@ -31,15 +31,20 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+        
     - name: Install SonarScanner
       run: |
-             sudo apt update
-             sudo apt install -y unzip
-             curl -o sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-             unzip sonar-scanner.zip
-             sudo mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
-             echo "export PATH=/opt/sonar-scanner/bin:\$PATH" >> ~/.bashrc
-              source ~/.bashrc
+        sudo apt update
+        sudo apt install -y unzip
+        curl -o sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+        unzip sonar-scanner.zip
+        sudo mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
+        echo "export PATH=/opt/sonar-scanner/bin:$PATH" >> $HOME/.bashrc
+        echo "export PATH=/opt/sonar-scanner/bin:$PATH" >> $HOME/.profile
+        source $HOME/.bashrc
+        source $HOME/.profile
+        export PATH=/opt/sonar-scanner/bin:$PATH
+
 
     - name: SonarQube Scan
       env:
