@@ -5,7 +5,7 @@ on:
     branches: [ "master" ]
 
 env:
-  AWS_REGION: ap-south-1    # Change as needed
+  AWS_REGION: ap-south-1
   ECR_REPOSITORY: backendecr
 
 jobs:
@@ -38,16 +38,18 @@ jobs:
         curl -o sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
         unzip sonar-scanner.zip
         sudo mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
-        echo "export PATH=/opt/sonar-scanner/bin:$PATH" >> $HOME/.bashrc
-        echo "export PATH=/opt/sonar-scanner/bin:$PATH" >> $HOME/.profile
+        echo "export PATH=/opt/sonar-scanner/bin:$PATH" | sudo tee -a /etc/profile
+        echo "export PATH=/opt/sonar-scanner/bin:$PATH" | tee -a ~/.bashrc ~/.profile
         export PATH=/opt/sonar-scanner/bin:$PATH
-        /opt/sonar-scanner/bin/sonar-scanner --version  # Verify installation
+        ls -la /opt/sonar-scanner/bin
+        /opt/sonar-scanner/bin/sonar-scanner --version
 
     - name: SonarQube Scan
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       run: |
+        export PATH=/opt/sonar-scanner/bin:$PATH
         sonar-scanner \
           -Dsonar.projectKey=chromosomebackend \
           -Dsonar.sources=. \
