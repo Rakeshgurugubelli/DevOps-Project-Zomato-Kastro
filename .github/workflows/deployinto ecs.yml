@@ -66,7 +66,9 @@ jobs:
     - name: Install Docker (if not available)
       run: |
         sudo apt update
-        sudo apt install -y docker.io
+        sudo apt install -y docker.io || true
+        sudo apt remove -y containerd || true
+        sudo apt install -y containerd.io || true
         sudo systemctl start docker
         sudo systemctl enable docker
 
