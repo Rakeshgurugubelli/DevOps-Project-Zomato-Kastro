@@ -46,7 +46,7 @@ jobs:
              ls -la /opt/sonar-scanner/bin
              /opt/sonar-scanner/bin/sonar-scanner --version
         else
-            echo"sonarqube already installed"
+            echo "sonarqube already installed"
         fi
 
     - name: SonarQube Scan
