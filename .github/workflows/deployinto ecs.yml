@@ -8,11 +8,10 @@ env:
   AWS_REGION: ap-south-1
   ECR_REPOSITORY: backendecr
 
-
 jobs:
   build:
     name: Deploy
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
 
@@ -42,12 +41,12 @@ jobs:
              unzip sonar-scanner.zip
              sudo mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
              echo "export PATH=/opt/sonar-scanner/bin:$PATH" | sudo tee -a /etc/profile
-             echo "export PATH=/opt/sonar-scanner/bin:$PATH" | tee -a ~/.bashrc ~/.profile
+             echo "export PATH=/opt/sonar-scanner/bin:$PATH" >> ~/.bashrc
+             echo "export PATH=/opt/sonar-scanner/bin:$PATH" >> ~/.profile
              export PATH=/opt/sonar-scanner/bin:$PATH
-             ls -la /opt/sonar-scanner/bin
              /opt/sonar-scanner/bin/sonar-scanner --version
         else
-            echo "sonarqube already installed"
+            echo "SonarScanner already installed"
         fi
 
     - name: SonarQube Scan
@@ -62,20 +61,12 @@ jobs:
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN
 
-    
-    - name: Install Docker (if not available)
+    - name: Install Docker
       run: |
-       if ! docker --version ; then 
-          echo "docker installing"
-          sudo apt update
-          sudo apt install -y docker.io || true
-          sudo apt remove -y containerd || true
-          sudo apt install -y containerd.io || true
-          sudo systemctl start docker
-          sudo systemctl enable docker
-       else
-           echo "docker installed"
-       fi 
+        sudo apt update
+        sudo apt install -y docker.io
+        sudo systemctl start docker
+        sudo systemctl enable docker
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
@@ -83,23 +74,23 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
-   
+
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: docker image Build and  tag 
+    - name: Build Docker image
       id: build-image
-      env: 
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
       run: |
-        sudo docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
 
-    - name: docker image push to github
-      env: 
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+    - name: Push Docker image to ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
       run: |
-        sudo docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
