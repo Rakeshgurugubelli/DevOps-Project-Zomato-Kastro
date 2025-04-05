@@ -7,6 +7,8 @@ on:
 env:
   AWS_REGION: ap-south-1
   ECR_REPOSITORY: backendecr
+  ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
   build:
@@ -89,9 +91,6 @@ jobs:
 
     - name: docker image Build and  tag 
       id: build-image
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: ${{ github.sha }}
       run: |
         sudo docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
 
