@@ -11,7 +11,7 @@ env:
 jobs:
   build:
     name: Deploy
-    runs-on: ubuntu-latest
+    runs-on: dev
 
     steps:
 
@@ -70,12 +70,18 @@ jobs:
 
     - name: Install Docker (if not available)
       run: |
-        sudo apt update
-        sudo apt install -y docker.io || true
-        sudo apt remove -y containerd || true
-        sudo apt install -y containerd.io || true
-        sudo systemctl start docker
-        sudo systemctl enable docker
+       if ! docker --version ; then 
+          echo "docker installing"
+          sudo apt update
+          sudo apt install -y docker.io || true
+          sudo apt remove -y containerd || true
+          sudo apt install -y containerd.io || true
+          sudo systemctl start docker
+          sudo systemctl enable docker
+       else
+           echo "docker installed"
+       fi    
+        
 
     - name: Login to Amazon ECR
       id: login-ecr
