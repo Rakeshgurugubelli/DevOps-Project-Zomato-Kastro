@@ -33,16 +33,21 @@ jobs:
 
     - name: Install SonarScanner
       run: |
-        sudo apt update
-        sudo apt install -y unzip curl openjdk-17-jdk
-        curl -o sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-        unzip sonar-scanner.zip
-        sudo mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
-        echo "export PATH=/opt/sonar-scanner/bin:$PATH" | sudo tee -a /etc/profile
-        echo "export PATH=/opt/sonar-scanner/bin:$PATH" | tee -a ~/.bashrc ~/.profile
-        export PATH=/opt/sonar-scanner/bin:$PATH
-        ls -la /opt/sonar-scanner/bin
-        /opt/sonar-scanner/bin/sonar-scanner --version
+        if ! command -v sonar-scanner &> /dev/null; then
+             echo "SonarScanner not found. Installing..."
+             sudo apt update
+             sudo apt install -y unzip curl openjdk-17-jdk
+             curl -o sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+             unzip sonar-scanner.zip
+             sudo mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
+             echo "export PATH=/opt/sonar-scanner/bin:$PATH" | sudo tee -a /etc/profile
+             echo "export PATH=/opt/sonar-scanner/bin:$PATH" | tee -a ~/.bashrc ~/.profile
+             export PATH=/opt/sonar-scanner/bin:$PATH
+             ls -la /opt/sonar-scanner/bin
+             /opt/sonar-scanner/bin/sonar-scanner --version
+        else
+            echo"sonarqube already installed"
+        fi
 
     - name: SonarQube Scan
       env:
