@@ -6,8 +6,6 @@ on:
 
 env:
   AWS_REGION: ap-south-1
-  AWS_ACCESS_KEY_ID: AKIA2RVWE6TFIMJ4F2G3
-  AWS_SECRET_ACCESS_KEY: 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
   ECR_REPOSITORY: testing
 
 jobs:
@@ -24,8 +22,8 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ secret.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secret.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
 
     - name: Login to Amazon ECR
