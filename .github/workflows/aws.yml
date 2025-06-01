@@ -49,8 +49,9 @@ jobs:
 
     - name: Deploy with updated image
       run: |
-       envsubst < Kubernetes/deployment.yaml > Kubernetes/deployment.yaml
-       kubectl apply -f Kubernetes/deployment.yaml
+            envsubst < Kubernetes/deployment.yaml > Kubernetes/deployment-rendered.yaml
+            cat Kubernetes/deployment-rendered.yaml  # Optional: Debug output
+            kubectl apply -f Kubernetes/deployment-rendered.yaml
 
   
     # - name: Deploy Amazon ECS task definition
