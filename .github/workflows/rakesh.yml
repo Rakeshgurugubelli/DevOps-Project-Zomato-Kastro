@@ -13,9 +13,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag testing:$(date +%s)
+      run: docker build . --file Dockerfile --tag testing:v1
 
     - name: run the container
-      run: docker run -it -d --name cont1 -p 3000:3000 testing:$(date +%s)
+      run: |
+         docker rm -f cont1 | true
+         docker run -it -d --name cont1 -p 3000:3000 testing:v1
 
       
