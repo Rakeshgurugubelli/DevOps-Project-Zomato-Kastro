@@ -38,8 +38,7 @@ jobs:
 
 
     - name: run the container
-      run: |
-         docker rm -f cont1 || true
+      run: 
          docker run -it -d --name cont1 -p 4000:3000 $IMAGE_URI
          
     
