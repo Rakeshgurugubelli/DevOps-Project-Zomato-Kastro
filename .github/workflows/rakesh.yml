@@ -16,6 +16,6 @@ jobs:
       run: docker build . --file Dockerfile --tag testing:$(date +%s)
 
     - name: run the container
-      run: docker run -d --name cont1 -p 3000:3000 testing:$(date +%s)
+      run: docker run -it -d --name cont1 -p 3000:3000 testing:$(date +%s)
 
       
