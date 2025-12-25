@@ -4,7 +4,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted-ubuntu
+    runs-on: self-hosted
 
     env:
       AWS_REGION: ap-south-1
