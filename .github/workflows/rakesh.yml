@@ -29,7 +29,7 @@ jobs:
         ACCOUNT_ID=934424428884
         REGION=ap-south-1
         REPO=testing
-        TAG=${{ github.run_id }}
+        TAG=v3
 
         IMAGE_URI=$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPO:$TAG
 
