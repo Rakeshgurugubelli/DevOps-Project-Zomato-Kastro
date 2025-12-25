@@ -1,5 +1,3 @@
-name: Docker Image CI
-
 on:
   push:
     branches: [ "master" ]
@@ -7,6 +5,12 @@ on:
 jobs:
   build:
     runs-on: self-hosted
+
+    env:
+      AWS_REGION: ap-south-1
+      ACCOUNT_ID: 934424428884
+      REPO: testing
+      TAG: v3
 
     steps:
     - uses: actions/checkout@v4
@@ -16,31 +20,21 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-south-1
+        aws-region: ${{ env.AWS_REGION }}
 
     - name: Login to Amazon ECR
       run: |
-        aws ecr get-login-password --region ${{aws-region}} \
+        aws ecr get-login-password --region $AWS_REGION \
         | docker login --username AWS --password-stdin \
-          934424428884.dkr.ecr.ap-south-1.amazonaws.com
+          $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
     - name: Build, tag, and push image
       run: |
-        ACCOUNT_ID=934424428884
-        REGION=ap-south-1
-        REPO=testing
-        TAG=v3
-
-        IMAGE_URI=$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPO:$TAG
-
+        IMAGE_URI=$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO:$TAG
         docker build -t $IMAGE_URI .
         docker push $IMAGE_URI
 
-
-    - name: run the container
-      run: 
-         docker run -it -d --name cont1 -p 4000:3000 $IMAGE_URI
-         
-    
-
-      
+    - name: Run the container
+      run: |
+        IMAGE_URI=$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO:$TAG
+        docker run -d --name cont1 -p 4000:3000 $IMAGE_URI
