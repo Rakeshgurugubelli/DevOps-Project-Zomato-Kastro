@@ -10,7 +10,7 @@ jobs:
       AWS_REGION: ap-south-1
       ACCOUNT_ID: 934424428884
       REPO: testing
-      TAG: v4
+      TAG: v5
 
     steps:
     - uses: actions/checkout@v4
